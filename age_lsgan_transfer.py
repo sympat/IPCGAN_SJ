@@ -43,17 +43,20 @@ flags.DEFINE_float("age_loss_weight", None, "age_loss_weight")
 
 flags.DEFINE_float("tv_loss_weight", None, "face_loss_weight")
 
-flags.DEFINE_string("checkpoint_dir", None, "Directory name to save the checkpoints")
+# modified by HJY
+flags.DEFINE_string("checkpoint_dir", './checkpoints/01_train/0_conv5_lsgan_transfer_g75_0.5f-4_a30/', "Directory name to save the checkpoints")
 
-flags.DEFINE_string("source_checkpoint_dir", ' ', "Directory name to save the checkpoints")
+flags.DEFINE_string("source_checkpoint_dir", './checkpoints/01_train/source/', "Directory name to save the checkpoints")
 
-flags.DEFINE_string("sample_dir", None, "Directory name to save the sample images")
+flags.DEFINE_string("sample_dir", './sample/01_train/0_conv5_lsgan_transfer_g75_0.5f-4_a30/', "Directory name to save the sample images")
 
 flags.DEFINE_string("fea_layer_name", None, "which layer to use for fea_loss")
 
-flags.DEFINE_string("source_file", 'your training file', "source file path")
+# modified by HJY
+flags.DEFINE_string("source_file", './sj_dataset/train_data/train_info.txt', "source file path")
 
-flags.DEFINE_string("root_folder", 'CACD_cropped_400/', "folder that contains images")
+# modified by HJY
+flags.DEFINE_string("root_folder", './sj_dataset/CACD2000/CACD2000/', "folder that contains images")
 
 FLAGS = flags.FLAGS
 
@@ -85,6 +88,7 @@ def my_train():
         false_label_features_64 = tf.placeholder(tf.float32, [FLAGS.batch_size, 64, 64, FLAGS.age_groups])
         age_label = tf.placeholder(tf.int32, [FLAGS.batch_size])
 
+        # 이 개 ㅈ같은 부분을 수정해야한다
         source_img_227, source_img_128, face_label = load_source_batch3(FLAGS.source_file, FLAGS.root_folder, FLAGS.batch_size)
 
         model.train_age_lsgan_transfer(source_img_227, source_img_128, imgs, true_label_features_128,
@@ -104,7 +108,7 @@ def my_train():
 
         # Start running operations on the Graph.
         sess.run(tf.global_variables_initializer())
-        tf.train.start_queue_runners(sess)
+        # tf.train.start_queue_runners(sess)
 
         model.alexnet_saver.restore(sess, FLAGS.alexnet_pretrained_model)
         model.age_saver.restore(sess, FLAGS.age_pretrained_model)
